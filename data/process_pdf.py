@@ -287,22 +287,51 @@ def create_dataset(data_file, label_file, dataset_data, dataset_label):
     label_lines = label_file_open.readlines()
 
     count=0
+    pat = re.compile(r"([.()!])")
+    bracket_remover=re.compile(r"\(.*?\)")
+    square_bracket_remover = re.compile(r"\[.*?\]")
 
     for i in range(len(data_lines)):
         data_paragraph = data_lines[i]
         label_paragraph = label_lines[i]
-        data_paragraph.replace("\n", "")
-        label_paragraph.replace("\n", "")
+        data_paragraph=pat.sub("\\1  ", data_paragraph)
+        label_paragraph=pat.sub("\\1  ", label_paragraph)
 
         data_sentence_list=tokenize.sent_tokenize(data_paragraph)
         label_sentence_list =tokenize.sent_tokenize(label_paragraph)
 
-        for j in range(min(len(data_sentence_list), len(label_sentence_list))):
+        #data_sentence_list=re.split(r"[^a-zA-Z0-9\,\s]",  data_paragraph)
+        #label_sentence_list = re.split(r"[^a-zA-Z0-9\,\s]", label_paragraph)
+
+        min_length=min(len(data_sentence_list), len(label_sentence_list))
+        at_least_one_sentence=False
+        for j in range(min_length):
+            jump = False
+            data_sentence_list[j]= bracket_remover.sub("", data_sentence_list[j])
+            label_sentence_list[j]= bracket_remover.sub("", label_sentence_list[j])
+            data_sentence_list[j] = square_bracket_remover.sub("", data_sentence_list[j])
+            label_sentence_list[j] = square_bracket_remover.sub("", label_sentence_list[j])
+
+            word_in_sentence_data = len(data_sentence_list[j].split())
+            word_in_sentence_label = len(label_sentence_list[j].split())
+            if float(abs(word_in_sentence_data - word_in_sentence_label)) > 6:
+                jump = True
+
+
+            if jump==True:
+                break
             count=count+1
-            dataset_data_open.write(data_sentence_list[j])
-            dataset_label_open.write(label_sentence_list[j])
-        dataset_data_open.write("\n")
-        dataset_label_open.write("\n")
+
+            if j==0:
+                dataset_data_open.write(data_sentence_list[j].strip())
+                dataset_label_open.write(label_sentence_list[j].strip())
+                at_least_one_sentence=True
+            else:
+                dataset_data_open.write("\n"+data_sentence_list[j].strip())
+                dataset_label_open.write("\n"+label_sentence_list[j].strip())
+        if at_least_one_sentence:
+            dataset_data_open.write("\n")
+            dataset_label_open.write("\n")
 
     print(count)
 
@@ -311,9 +340,10 @@ file_list=glob.glob("*.pdf")
 #file_list=[DIGITIZED_FILE]
 old_num_line_data=0
 old_num_line_label=0
-
+done=1
 for file_name in file_list:
-
+    if done==1:
+        break
     print(file_name)
     pdf_to_text(file_name, organized_file)
     clean_text(organized_file, final_text)
@@ -328,5 +358,7 @@ for file_name in file_list:
     old_num_line_label=num_lines_label
 
 create_dataset("label.txt", "data.txt","label_f.txt", "data_f.txt")
-
+pat = re.compile(r"([.()!])")
+sentence_test="The privilege of never seeing me again.Now I’m going to depart from your presence, which I hate."
+print(pat.sub("\\1  ", sentence_test))
 #print(re.sub("\[.*?\]","", "[He skims the letter] This letter corroborates the friar’s story."))
