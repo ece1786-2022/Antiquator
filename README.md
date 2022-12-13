@@ -14,6 +14,9 @@
 #### This uses a pre-existing chatbot: https://huggingface.co/facebook/blenderbot-400M-distill
 #### To run the chatbot, enter an input and use the slider to set the temperature for the Chatbot model and the Shakespeare model (T5-Base)
 
+## Data Processing File:
+### data/process_pdf.py
+
 ## Data and Label Files (Final):
 ### Data: data_f.txt
 ### Label: label_f.txt
