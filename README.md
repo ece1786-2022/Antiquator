@@ -13,3 +13,11 @@
 ### The Shakespeare style chatbot is in **Shakespeare_Chatbot.ipynb**. Please run this on Google Colab.
 #### This uses a pre-existing chatbot: https://huggingface.co/facebook/blenderbot-400M-distill
 #### To run the chatbot, enter an input and use the slider to set the temperature for the Chatbot model and the Shakespeare model (T5-Base)
+
+## Training Files (Final):
+### GPT2: GPT2_Shakespeare_Training_Trainer_Frozen_Layers.ipynb
+### T5: T5_Shakespeare_Training_FullDataset.ipynb
+
+## Evaluation Files:
+### GPT2: GPT2_Shakespeare_Evaluation.ipynb
+### T5: T5_Shakespeare_Evaluation.ipynb
